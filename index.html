@@ -149,7 +149,7 @@ select{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%
   <div class="sec-title"><span class="sec-num">4</span>Documents & Timeline</div>
   <div class="fg"><label class="fl">What documents do you have available?</label>
     <div class="fh">Check all that are ready or will be provided.</div>
-    <div style="font-size:13px;color:var(--muted);background:var(--accent-bg);border-radius:8px;padding:12px 14px;margin-bottom:12px;line-height:1.6">Don’t worry about sending files now — after you submit, we’ll reply with a secure upload link or you can email documents directly to <b>roy@rw-bim.com</b>.</div>
+    <div style="font-size:13px;color:var(--muted);background:var(--accent-bg);border-radius:8px;padding:12px 14px;margin-bottom:12px;line-height:1.6">Don’t worry about sending files now — after you submit, we’ll reply with a secure upload link or you can email documents directly to <b><span id="upload-email"></span></b>.</div>
     <div class="cb-group" id="q-docs">
       <div class="cb-item" data-v="Mechanical Drawings (IFC set)"><input type="checkbox"><span class="cb-dot"></span>Mechanical Drawings</div>
       <div class="cb-item" data-v="Specifications"><input type="checkbox"><span class="cb-dot"></span>Specifications</div>
@@ -200,12 +200,23 @@ select{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%
 
 <div class="foot">
   <div class="co">RW BIM</div>
-  <div>Roy Whitten &bull; <a href="mailto:roy@rw-bim.com">roy@rw-bim.com</a> &bull; 616-232-0280</div>
-  
+  <div id="ft-contact">Roy Whitten</div>
 </div>
 
 <script>
 // Checkbox toggle
+// Contact info (obfuscated to prevent scraping)
+var _e=[114,111,121,64,114,119,45,98,105,109,46,99,111,109];
+var _p=[54,49,54,45,50,51,50,45,48,50,56,48];
+function _d(a){return a.map(function(c){return String.fromCharCode(c)}).join('');}
+(function(){
+  var e=_d(_e),p=_d(_p);
+  var fc=document.getElementById('ft-contact');
+  var ue=document.getElementById('upload-email');
+  if(ue)ue.textContent=e;
+  if(fc)fc.innerHTML='Roy Whitten &bull; <a href="mailto:'+e+'">'+e+'</a> &bull; '+p;
+})();
+
 document.querySelectorAll('.cb-item').forEach(function(el){
   el.addEventListener('click',function(e){
     if(e.target.tagName==='INPUT')return;
@@ -277,11 +288,11 @@ function submitQuote(){
   var subject='Quote Request: '+project+' — '+company;
 
   // Build Gmail compose URL and mailto as fallback
-  var gmail='https://mail.google.com/mail/?view=cm&to=roy@rw-bim.com&su='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);
-  var mailto='mailto:roy@rw-bim.com?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);
+  var em=_d(_e);var gmail='https://mail.google.com/mail/?view=cm&to='+em+'&su='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);
+  var mailto='mailto:'+em+'?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);
   
   // Store body for copy function
-  window._quoteBody = 'To: roy@rw-bim.com\nSubject: '+subject+'\n\n'+body;
+  window._quoteBody = 'To: '+em+'\nSubject: '+subject+'\n\n'+body;
 
   // Show options - don't auto-navigate
   st.className='status ok';
@@ -291,7 +302,7 @@ function submitQuote(){
     +'<a href="'+mailto+'" style="display:inline-flex;align-items:center;gap:6px;background:transparent;color:#0d8b7d;padding:10px 20px;border-radius:8px;font-family:inherit;font-size:14px;font-weight:600;text-decoration:none;cursor:pointer;border:1.5px solid #0d8b7d">Open Email App</a>'
     +'<button onclick="copyQuote()" style="display:inline-flex;align-items:center;gap:6px;background:transparent;color:#6b7a8d;padding:10px 20px;border-radius:8px;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;border:1.5px solid #e2e6ed">Copy to Clipboard</button>'
     +'</div>'
-    +'<div style="font-size:12px;color:#6b7a8d">Choose how you\'d like to send your request to <b>roy@rw-bim.com</b></div>';
+    +'<div style="font-size:12px;color:#6b7a8d">Choose how you\'d like to send your request to <b>'+em+'</b></div>';
   st.style.display='block';
   st.scrollIntoView({behavior:'smooth',block:'center'});
 }
@@ -300,20 +311,32 @@ window.copyQuote=function(){
   if(window._quoteBody){
     navigator.clipboard.writeText(window._quoteBody).then(function(){
       var st=document.getElementById('status');
-      st.innerHTML='Copied! Paste into an email to <b>roy@rw-bim.com</b>';
+      st.innerHTML='Copied! Paste into an email to <b>'+_d(_e)+'</b>';
     }).catch(function(){
       var t=document.createElement('textarea');t.value=window._quoteBody;
       document.body.appendChild(t);t.select();document.execCommand('copy');
       document.body.removeChild(t);
       var st=document.getElementById('status');
-      st.innerHTML='Copied! Paste into an email to <b>roy@rw-bim.com</b>';
+      st.innerHTML='Copied! Paste into an email to <b>'+_d(_e)+'</b>';
     });
   }
 };
 function resetForm(){
   document.querySelectorAll('input[type=text],input[type=email],input[type=tel],textarea').forEach(function(el){el.value='';});
   document.querySelectorAll('select').forEach(function(el){el.selectedIndex=0;});
-  document.querySelectorAll('.cb-item').forEach(function(el){el.classList.remove('on');el.querySelector('input').checked=false;});
+  // Contact info (obfuscated to prevent scraping)
+var _e=[114,111,121,64,114,119,45,98,105,109,46,99,111,109];
+var _p=[54,49,54,45,50,51,50,45,48,50,56,48];
+function _d(a){return a.map(function(c){return String.fromCharCode(c)}).join('');}
+(function(){
+  var e=_d(_e),p=_d(_p);
+  var fc=document.getElementById('ft-contact');
+  var ue=document.getElementById('upload-email');
+  if(ue)ue.textContent=e;
+  if(fc)fc.innerHTML='Roy Whitten &bull; <a href="mailto:'+e+'">'+e+'</a> &bull; '+p;
+})();
+
+document.querySelectorAll('.cb-item').forEach(function(el){el.classList.remove('on');el.querySelector('input').checked=false;});
   var st=document.getElementById('status');st.className='status';st.style.display='none';
   window.scrollTo({top:0,behavior:'smooth'});
 }
