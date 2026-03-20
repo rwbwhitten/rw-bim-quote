@@ -276,15 +276,38 @@ function submitQuote(){
   var body=lines.join('\n');
   var subject='Quote Request: '+project+' — '+company;
 
-  // Open mailto
+  // Open email - try mailto first, with Gmail fallback
   var mailto='mailto:roy@rw-bim.com?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);
+  
+  // Also build a Gmail compose URL as fallback
+  var gmail='https://mail.google.com/mail/?view=cm&to=roy@rw-bim.com&su='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);
+  
+  // Try mailto
   window.location.href=mailto;
 
+  // Show success with copy fallback
   st.className='status ok';
-  st.innerHTML='Your email client should open with the quote request. If it doesn\'t, you can copy the details below and email them to <b>roy@rw-bim.com</b>.';
+  st.innerHTML='Your email client should open with the quote request.<br><br>If it didn\'t open, try: <a href="'+gmail+'" target="_blank" style="color:#0d8b7d;font-weight:600">Open in Gmail</a> &nbsp;or&nbsp; <button onclick="copyQuote()" style="background:#0d8b7d;color:#fff;border:none;padding:6px 14px;border-radius:6px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer">Copy to Clipboard</button>';
   st.style.display='block';
+  
+  // Store body for copy function
+  window._quoteBody = 'To: roy@rw-bim.com\nSubject: '+subject+'\n\n'+body;
 }
 
+window.copyQuote=function(){
+  if(window._quoteBody){
+    navigator.clipboard.writeText(window._quoteBody).then(function(){
+      var st=document.getElementById('status');
+      st.innerHTML='Copied! Paste into an email to <b>roy@rw-bim.com</b>';
+    }).catch(function(){
+      var t=document.createElement('textarea');t.value=window._quoteBody;
+      document.body.appendChild(t);t.select();document.execCommand('copy');
+      document.body.removeChild(t);
+      var st=document.getElementById('status');
+      st.innerHTML='Copied! Paste into an email to <b>roy@rw-bim.com</b>';
+    });
+  }
+};
 function resetForm(){
   document.querySelectorAll('input[type=text],input[type=email],input[type=tel],textarea').forEach(function(el){el.value='';});
   document.querySelectorAll('select').forEach(function(el){el.selectedIndex=0;});
