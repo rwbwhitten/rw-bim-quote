@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Scan Checklist">
+  <meta name="theme-color" content="#111827">
+  <title>RW BIM — Scan Checklist</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #111827;
+      --surface: #1f2937;
+      --surface2: #374151;
+      --border: #374151;
+      --accent: #14b8a6;
+      --accent-dim: #0d9488;
+      --text: #f9fafb;
+      --text-muted: #9ca3af;
+      --check-bg: #14b8a6;
+      --danger: #ef4444;
+      --radius: 12px;
+      --radius-sm: 8px;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-size: 16px;
+      line-height: 1.5;
+      min-height: 100vh;
+      padding-bottom: 80px;
+    }
+
+    /* ── Header ── */
+    header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 16px 20px 12px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .header-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    .app-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--accent);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .reset-btn {
+      background: transparent;
+      border: 1.5px solid var(--danger);
+      color: var(--danger);
+      border-radius: var(--radius-sm);
+      padding: 6px 14px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      transition: background 0.15s;
+    }
+    .reset-btn:active { background: rgba(239,68,68,0.15); }
+
+    /* ── Progress ── */
+    .progress-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .progress-bar {
+      flex: 1;
+      height: 6px;
+      background: var(--surface2);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: var(--accent);
+      border-radius: 999px;
+      transition: width 0.25s ease;
+      width: 0%;
+    }
+
+    .progress-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-muted);
+      white-space: nowrap;
+      min-width: 52px;
+      text-align: right;
+    }
+
+    /* ── Job Info ── */
+    .job-info {
+      padding: 16px 20px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      display: grid;
+      gap: 10px;
+    }
+
+    .job-info label {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--accent);
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .job-info input {
+      width: 100%;
+      background: var(--surface2);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text);
+      font-size: 15px;
+      padding: 10px 12px;
+      outline: none;
+      -webkit-appearance: none;
+      transition: border-color 0.15s;
+    }
+    .job-info input:focus { border-color: var(--accent); }
+    .job-info input::placeholder { color: var(--text-muted); }
+
+    /* ── Sections ── */
+    .section {
+      margin: 12px 12px 0;
+      background: var(--surface);
+      border-radius: var(--radius);
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 16px;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+
+    .section-header:active { background: var(--surface2); }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    .section-icon {
+      font-size: 18px;
+      width: 26px;
+      text-align: center;
+    }
+
+    .section-badge {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      background: var(--surface2);
+      border-radius: 999px;
+      padding: 2px 8px;
+    }
+
+    .section-badge.done {
+      color: var(--accent);
+      background: rgba(20,184,166,0.15);
+    }
+
+    .chevron {
+      color: var(--text-muted);
+      font-size: 12px;
+      transition: transform 0.2s;
+    }
+
+    .section.collapsed .chevron { transform: rotate(-90deg); }
+
+    .section-body {
+      border-top: 1px solid var(--border);
+      overflow: hidden;
+    }
+
+    .section.collapsed .section-body { display: none; }
+
+    /* ── Checklist Items ── */
+    .item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 13px 16px;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      transition: background 0.1s;
+    }
+
+    .item:last-child { border-bottom: none; }
+    .item:active { background: var(--surface2); }
+
+    .item.checked { opacity: 0.55; }
+    .item.checked .item-label { text-decoration: line-through; color: var(--text-muted); }
+
+    .checkbox {
+      width: 26px;
+      height: 26px;
+      border-radius: 7px;
+      border: 2px solid var(--surface2);
+      background: var(--surface2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: background 0.15s, border-color 0.15s;
+    }
+
+    .item.checked .checkbox {
+      background: var(--check-bg);
+      border-color: var(--check-bg);
+    }
+
+    .checkmark {
+      display: none;
+      color: #fff;
+      font-size: 15px;
+      font-weight: 900;
+      line-height: 1;
+    }
+
+    .item.checked .checkmark { display: block; }
+
+    .item-label {
+      font-size: 15px;
+      line-height: 1.35;
+      flex: 1;
+    }
+
+    .item-note {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    /* ── Completion Banner ── */
+    .complete-banner {
+      display: none;
+      margin: 12px 12px 0;
+      background: rgba(20,184,166,0.12);
+      border: 1.5px solid var(--accent);
+      border-radius: var(--radius);
+      padding: 16px;
+      text-align: center;
+    }
+
+    .complete-banner.show { display: block; }
+
+    .complete-banner .emoji { font-size: 28px; margin-bottom: 6px; }
+    .complete-banner p { font-size: 15px; font-weight: 600; color: var(--accent); }
+    .complete-banner small { font-size: 13px; color: var(--text-muted); }
+
+    /* ── Install tip ── */
+    .install-tip {
+      margin: 12px 12px 0;
+      background: rgba(20,184,166,0.06);
+      border: 1px solid rgba(20,184,166,0.25);
+      border-radius: var(--radius);
+      padding: 12px 14px;
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    .install-tip strong { color: var(--accent); }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <div class="header-top">
+      <span class="app-title">RW BIM · Scan Checklist</span>
+      <button class="reset-btn" onclick="resetAll()">New Job</button>
+    </div>
+    <div class="progress-wrap">
+      <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+      <div class="progress-label" id="progressLabel">0 / 0</div>
+    </div>
+  </header>
+
+  <!-- Job Info -->
+  <div class="job-info">
+    <div>
+      <label>Job / Project ID</label>
+      <input type="text" id="jobId" placeholder="E_26_004_HKNS_ResidenceAddition" autocomplete="off">
+    </div>
+    <div>
+      <label>Address</label>
+      <input type="text" id="jobAddr" placeholder="661 E Main St, Edmore MI" autocomplete="off">
+    </div>
+    <div>
+      <label>Date</label>
+      <input type="date" id="jobDate">
+    </div>
+  </div>
+
+  <!-- Completion Banner -->
+  <div class="complete-banner" id="completeBanner">
+    <div class="emoji">✅</div>
+    <p>Scan complete — all items checked.</p>
+    <small>Tap "New Job" to reset for the next site.</small>
+  </div>
+
+  <!-- Sections -->
+  <div id="checklist"></div>
+
+  <!-- Install Tip -->
+  <div class="install-tip" id="installTip">
+    <strong>Install on home screen:</strong> Chrome → tap ⋮ → "Add to Home screen." Opens full-screen, no browser bar.
+  </div>
+
+<script>
+const SECTIONS = [
+  {
+    id: 'gear',
+    icon: '🎒',
+    title: 'Equipment — Pre-Load',
+    items: [
+      { label: 'Scanner battery charged to 100%' },
+      { label: 'Spare battery / power bank packed' },
+      { label: 'Laptop charged', note: 'AC adapter in bag' },
+      { label: 'SD card / internal storage cleared and formatted' },
+      { label: 'Tripod packed and locked' },
+      { label: 'Scan targets — enough for full coverage', note: 'Aim for ≥5 targets per area' },
+      { label: 'Scanner in case, undamaged' },
+      { label: 'USB cable / data transfer cable' },
+      { label: 'Personal safety gear (vest, boots)' },
+    ]
+  },
+  {
+    id: 'setup',
+    icon: '📋',
+    title: 'On-Site Setup',
+    items: [
+      { label: 'Confirm address matches job' },
+      { label: 'Walk site — plan scan station locations' },
+      { label: 'Sketch floor plan or photo existing plan', note: 'Will number stations on this' },
+      { label: 'Set scanner resolution and quality settings' },
+      { label: 'Place targets — mark positions on sketch' },
+    ]
+  },
+  {
+    id: 'interior',
+    icon: '🏠',
+    title: 'Interior Scan',
+    items: [
+      { label: 'Entry / foyer' },
+      { label: 'Living room / great room' },
+      { label: 'Dining room' },
+      { label: 'Kitchen' },
+      { label: 'Primary bedroom' },
+      { label: 'Bedroom 2' },
+      { label: 'Bedroom 3' },
+      { label: 'Bedroom 4' },
+      { label: 'Primary bathroom' },
+      { label: 'Bathroom 2' },
+      { label: 'Bathroom 3 / powder room' },
+      { label: 'Laundry / utility room' },
+      { label: 'Basement / crawl space' },
+      { label: 'Attic access / attic' },
+      { label: 'Garage' },
+      { label: 'All closets captured', note: 'Open doors, scan inside' },
+      { label: 'All stairwells' },
+      { label: 'Hallways and connectors' },
+      { label: 'Mechanical / HVAC space' },
+    ]
+  },
+  {
+    id: 'exterior',
+    icon: '🧭',
+    title: 'Exterior Scan',
+    items: [
+      { label: 'Front elevation (street-facing)' },
+      { label: 'Rear elevation' },
+      { label: 'Left elevation' },
+      { label: 'Right elevation' },
+      { label: 'Roofline captured from ground', note: 'Multiple angles for pitch / ridge' },
+      { label: 'Grade and site conditions', note: 'Enough context for site plan' },
+      { label: 'Exterior of addition area', note: 'Extra coverage at addition location' },
+    ]
+  },
+  {
+    id: 'qa',
+    icon: '🔍',
+    title: 'Field QA',
+    items: [
+      { label: 'Every station connected to ≥ 2 neighbors', note: 'No isolated scans' },
+      { label: 'Adequate target overlap between stations', note: 'Min 3 common targets per pair' },
+      { label: 'Tight areas re-scanned from multiple angles', note: 'Closets, baths, stairwells' },
+      { label: 'No major occlusions in critical areas', note: 'Walk and verify on laptop' },
+      { label: 'Exterior-to-interior tie-in scans complete' },
+    ]
+  },
+  {
+    id: 'files',
+    icon: '💾',
+    title: 'File Management',
+    items: [
+      { label: 'All scan data transferred to laptop' },
+      { label: 'File count matches station count on sketch' },
+      { label: 'Stations labeled on sketch with scan numbers' },
+      { label: 'Backup to external drive or cloud', note: 'Do not leave site with only one copy' },
+      { label: 'SD card / scanner storage verified intact' },
+    ]
+  },
+  {
+    id: 'wrapup',
+    icon: '✔️',
+    title: 'Wrap-Up',
+    items: [
+      { label: 'All targets retrieved and counted' },
+      { label: 'All equipment inventoried and packed' },
+      { label: 'Site left clean and secured' },
+      { label: 'Update project log — scan date, station count, notes' },
+    ]
+  }
+];
+
+// State
+let checks = {};
+
+function save() {
+  try { localStorage.setItem('rwbim_scan', JSON.stringify({ checks, jobId: document.getElementById('jobId').value, jobAddr: document.getElementById('jobAddr').value, jobDate: document.getElementById('jobDate').value })); } catch(e) {}
+}
+
+function load() {
+  try {
+    const d = JSON.parse(localStorage.getItem('rwbim_scan') || '{}');
+    checks = d.checks || {};
+    if (d.jobId) document.getElementById('jobId').value = d.jobId;
+    if (d.jobAddr) document.getElementById('jobAddr').value = d.jobAddr;
+    if (d.jobDate) document.getElementById('jobDate').value = d.jobDate;
+  } catch(e) { checks = {}; }
+}
+
+function resetAll() {
+  if (!confirm('Clear all checks and start a new job?')) return;
+  checks = {};
+  document.getElementById('jobId').value = '';
+  document.getElementById('jobAddr').value = '';
+  document.getElementById('jobDate').value = '';
+  renderAll();
+  save();
+}
+
+function toggle(id) {
+  checks[id] = !checks[id];
+  const el = document.querySelector(`[data-id="${id}"]`);
+  el.classList.toggle('checked', checks[id]);
+  updateSection(el.closest('.section'));
+  updateProgress();
+  save();
+}
+
+function updateSection(sec) {
+  const items = sec.querySelectorAll('.item');
+  const total = items.length;
+  const done = [...items].filter(i => i.classList.contains('checked')).length;
+  const badge = sec.querySelector('.section-badge');
+  badge.textContent = `${done} / ${total}`;
+  badge.className = 'section-badge' + (done === total ? ' done' : '');
+}
+
+function updateProgress() {
+  const all = document.querySelectorAll('.item');
+  const total = all.length;
+  const done = [...all].filter(i => i.classList.contains('checked')).length;
+  document.getElementById('progressFill').style.width = total ? `${(done/total)*100}%` : '0%';
+  document.getElementById('progressLabel').textContent = `${done} / ${total}`;
+  document.getElementById('completeBanner').classList.toggle('show', total > 0 && done === total);
+}
+
+function renderSection(sec) {
+  const div = document.createElement('div');
+  div.className = 'section';
+  div.dataset.secId = sec.id;
+
+  const total = sec.items.length;
+  const done = sec.items.filter(i => checks[`${sec.id}_${i.label}`]).length;
+
+  div.innerHTML = `
+    <div class="section-header" onclick="toggleSection(this.parentElement)">
+      <div class="section-title">
+        <span class="section-icon">${sec.icon}</span>
+        ${sec.title}
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span class="section-badge${done===total?' done':''}">${done} / ${total}</span>
+        <span class="chevron">▼</span>
+      </div>
+    </div>
+    <div class="section-body">
+      ${sec.items.map(item => {
+        const id = `${sec.id}_${item.label}`;
+        const checked = !!checks[id];
+        return `
+          <div class="item${checked?' checked':''}" data-id="${id}" onclick="toggle('${id}')">
+            <div class="checkbox"><span class="checkmark">✓</span></div>
+            <div>
+              <div class="item-label">${item.label}</div>
+              ${item.note ? `<div class="item-note">${item.note}</div>` : ''}
+            </div>
+          </div>`;
+      }).join('')}
+    </div>`;
+
+  return div;
+}
+
+function toggleSection(sec) {
+  sec.classList.toggle('collapsed');
+}
+
+function renderAll() {
+  const cl = document.getElementById('checklist');
+  cl.innerHTML = '';
+  SECTIONS.forEach(s => cl.appendChild(renderSection(s)));
+  updateProgress();
+  document.getElementById('completeBanner').classList.remove('show');
+}
+
+// Set today's date as default
+try { document.getElementById('jobDate').value = new Date().toISOString().slice(0, 10); } catch(e) {}
+['jobId','jobAddr','jobDate'].forEach(id => {
+  try { document.getElementById(id).addEventListener('input', save); } catch(e) {}
+});
+
+// Hide install tip after first visit
+try {
+  if (localStorage.getItem('rwbim_scan_seen')) {
+    document.getElementById('installTip').style.display = 'none';
+  } else {
+    localStorage.setItem('rwbim_scan_seen', '1');
+  }
+} catch(e) {}
+
+// Always render — even if storage fails
+try { load(); } catch(e) { checks = {}; }
+renderAll();
+</script>
+</body>
+</html>
