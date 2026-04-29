@@ -1,6 +1,6 @@
 {
   "meta": {
-    "updated": "2026-04-28",
+    "updated": "2026-04-29",
     "repo": "rwbwhitten/rw-bim-quote"
   },
   "projects": [
@@ -22,8 +22,8 @@
           "id": "scan_interior",
           "label": "Interior Laser Scan",
           "description": "Full interior 3D scan — all rooms and spaces",
-          "status": "pending",
-          "date": null
+          "status": "complete",
+          "date": "2026-04-29"
         },
         {
           "id": "scan_exterior",
