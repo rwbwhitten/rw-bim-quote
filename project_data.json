@@ -1,0 +1,73 @@
+{
+  "meta": {
+    "updated": "2026-04-28",
+    "repo": "rwbwhitten/rw-bim-quote"
+  },
+  "projects": [
+    {
+      "id": "E_26_004_HKNS_ResidenceAddition",
+      "name": "Hoskins Residence",
+      "client": "Logan Hoskins",
+      "address": "661 E Main St, Edmore, MI 48829",
+      "clientPage": "hoskins.html",
+      "milestones": [
+        {
+          "id": "setup",
+          "label": "Project Setup",
+          "description": "Files organized, permit requirements researched",
+          "status": "complete",
+          "date": "2026-04-28"
+        },
+        {
+          "id": "scan_interior",
+          "label": "Interior Laser Scan",
+          "description": "Full interior 3D scan — all rooms and spaces",
+          "status": "pending",
+          "date": null
+        },
+        {
+          "id": "scan_exterior",
+          "label": "Exterior Laser Scan",
+          "description": "All four elevations, roofline, site grade",
+          "status": "pending",
+          "date": null
+        },
+        {
+          "id": "scan_processing",
+          "label": "Scan Processing",
+          "description": "Point cloud registration in Faro Scene, QA check",
+          "status": "pending",
+          "date": null
+        },
+        {
+          "id": "model_existing",
+          "label": "As-Built BIM Model",
+          "description": "Existing conditions Revit model from point cloud",
+          "status": "pending",
+          "date": null
+        },
+        {
+          "id": "design_entry",
+          "label": "Entry Addition Design",
+          "description": "Entry addition modeled and approved by Logan",
+          "status": "pending",
+          "date": null
+        },
+        {
+          "id": "design_bedroom",
+          "label": "New Bedroom Layout",
+          "description": "Interior bedroom modeled and approved by Logan",
+          "status": "pending",
+          "date": null
+        },
+        {
+          "id": "permit_drawings",
+          "label": "Permit Drawing Set",
+          "description": "PDF drawings delivered to Logan for submittal",
+          "status": "pending",
+          "date": null
+        }
+      ]
+    }
+  ]
+}

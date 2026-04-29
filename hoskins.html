@@ -13,7 +13,6 @@
       --green-light: #dcfce7;
       --amber: #d97706;
       --amber-light: #fef3c7;
-      --gray: #6b7280;
       --gray-light: #f3f4f6;
       --border: #e5e7eb;
       --text: #111827;
@@ -27,287 +26,186 @@
       font-size: 16px;
       line-height: 1.5;
     }
-    .site-header {
-      background: var(--navy);
-      color: white;
-      padding: 20px 24px 18px;
-    }
-    .site-header .brand {
-      font-size: 13px;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: #94a3b8;
-      margin-bottom: 6px;
-    }
+    .site-header { background: var(--navy); color: white; padding: 20px 24px 18px; }
+    .site-header .brand { font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; color: #94a3b8; margin-bottom: 6px; }
     .site-header h1 { font-size: 22px; font-weight: 700; line-height: 1.2; }
     .site-header .address { font-size: 14px; color: #94a3b8; margin-top: 4px; }
     .site-header .meta-row { display: flex; gap: 16px; margin-top: 14px; flex-wrap: wrap; }
-    .badge {
-      background: rgba(255,255,255,0.12);
-      border-radius: 20px;
-      padding: 4px 12px;
-      font-size: 12px;
-      color: #e2e8f0;
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-    }
+    .badge { background: rgba(255,255,255,0.12); border-radius: 20px; padding: 4px 12px; font-size: 12px; color: #e2e8f0; display: inline-flex; align-items: center; gap: 5px; }
     .badge.phase { background: var(--blue); color: white; font-weight: 600; }
     main { max-width: 680px; margin: 0 auto; padding: 20px 16px 48px; }
-    .section {
-      background: white;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 20px;
-      margin-bottom: 16px;
-    }
-    .section-title {
-      font-size: 13px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.07em;
-      color: var(--text-muted);
-      margin-bottom: 14px;
-    }
+    .section { background: white; border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 16px; }
+    .section-title { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-muted); margin-bottom: 14px; }
     .progress-label { display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 6px; }
     .progress-label span:first-child { font-weight: 600; }
     .progress-label span:last-child { color: var(--text-muted); }
     .progress-bar { height: 8px; background: var(--gray-light); border-radius: 99px; overflow: hidden; }
-    .progress-fill { height: 100%; background: var(--blue); border-radius: 99px; }
+    .progress-fill { height: 100%; background: var(--blue); border-radius: 99px; transition: width 0.5s ease; }
     .scope-list { display: flex; flex-direction: column; gap: 10px; }
-    .scope-item {
-      display: flex;
-      align-items: flex-start;
-      gap: 12px;
-      padding: 12px;
-      border-radius: 8px;
-      background: var(--gray-light);
-    }
-    .scope-item.done { background: var(--green-light); }
-    .scope-item.active { background: var(--blue-light); }
-    .scope-dot {
-      width: 20px; height: 20px; border-radius: 50%; flex-shrink: 0;
-      margin-top: 1px; display: flex; align-items: center; justify-content: center; font-size: 11px;
-    }
+    .scope-item { display: flex; align-items: flex-start; gap: 12px; padding: 12px; border-radius: 8px; background: var(--gray-light); }
+    .scope-item.complete { background: var(--green-light); }
+    .scope-item.in_progress { background: var(--blue-light); }
+    .scope-dot { width: 20px; height: 20px; border-radius: 50%; flex-shrink: 0; margin-top: 1px; display: flex; align-items: center; justify-content: center; font-size: 11px; }
     .scope-dot.pending { background: #d1d5db; }
-    .scope-dot.active { background: var(--blue); }
-    .scope-dot.done { background: var(--green); }
-    .scope-dot.done::after { content: '✓'; color: white; font-weight: 700; }
-    .scope-dot.active::after { content: ''; display: block; width: 8px; height: 8px; background: white; border-radius: 50%; }
+    .scope-dot.in_progress { background: var(--blue); }
+    .scope-dot.complete { background: var(--green); }
+    .scope-dot.complete::after { content: '✓'; color: white; font-weight: 700; font-size: 12px; }
+    .scope-dot.in_progress::after { content: ''; display: block; width: 8px; height: 8px; background: white; border-radius: 50%; }
     .scope-dot.pending::after { content: ''; display: block; width: 8px; height: 8px; background: #9ca3af; border-radius: 50%; }
     .scope-info { flex: 1; }
     .scope-name { font-weight: 600; font-size: 15px; }
-    .scope-name.done { color: var(--green); }
-    .scope-name.active { color: var(--blue); }
+    .scope-name.complete { color: var(--green); }
+    .scope-name.in_progress { color: var(--blue); }
     .scope-desc { font-size: 13px; color: var(--text-muted); margin-top: 2px; }
-    .timeline { display: flex; flex-direction: column; gap: 0; }
+    .scope-date { font-size: 12px; color: var(--green); margin-top: 4px; font-weight: 500; }
+    .timeline { display: flex; flex-direction: column; }
     .timeline-item { display: flex; gap: 14px; position: relative; }
-    .timeline-item:not(:last-child) .tl-line {
-      position: absolute; left: 11px; top: 24px; bottom: -4px; width: 2px; background: var(--border);
-    }
-    .tl-dot {
-      width: 24px; height: 24px; border-radius: 50%; flex-shrink: 0;
-      margin-top: 10px; display: flex; align-items: center; justify-content: center;
-      font-size: 12px; z-index: 1;
-    }
-    .tl-dot.done { background: var(--green); color: white; font-weight: 700; }
-    .tl-dot.active { background: var(--blue); color: white; }
-    .tl-dot.future { background: var(--gray-light); border: 2px solid var(--border); }
+    .timeline-item:not(:last-child) .tl-line { position: absolute; left: 11px; top: 24px; bottom: -4px; width: 2px; background: var(--border); }
+    .tl-dot { width: 24px; height: 24px; border-radius: 50%; flex-shrink: 0; margin-top: 10px; display: flex; align-items: center; justify-content: center; font-size: 12px; z-index: 1; }
+    .tl-dot.complete { background: var(--green); color: white; font-weight: 700; }
+    .tl-dot.in_progress { background: var(--blue); color: white; }
+    .tl-dot.pending { background: var(--gray-light); border: 2px solid var(--border); }
     .tl-content { flex: 1; padding: 10px 0 16px; }
     .tl-label { font-weight: 600; font-size: 15px; }
-    .tl-label.done { color: var(--green); }
-    .tl-label.active { color: var(--blue); }
-    .tl-label.future { color: var(--text-muted); }
+    .tl-label.complete { color: var(--green); }
+    .tl-label.in_progress { color: var(--blue); }
+    .tl-label.pending { color: var(--text-muted); }
     .tl-sub { font-size: 13px; color: var(--text-muted); margin-top: 2px; }
-    .tl-date { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+    .tl-date { font-size: 12px; color: var(--green); margin-top: 4px; font-weight: 500; }
     .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
     @media (max-width: 400px) { .info-grid { grid-template-columns: 1fr; } }
     .info-label { font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; margin-bottom: 2px; }
     .info-value { font-size: 15px; font-weight: 500; }
     .contact-card { display: flex; align-items: center; gap: 14px; }
-    .contact-avatar {
-      width: 44px; height: 44px; border-radius: 50%;
-      background: var(--navy); color: white; display: flex; align-items: center;
-      justify-content: center; font-weight: 700; font-size: 17px; flex-shrink: 0;
-    }
+    .contact-avatar { width: 44px; height: 44px; border-radius: 50%; background: var(--navy); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 17px; flex-shrink: 0; }
     .contact-name { font-weight: 700; font-size: 16px; }
     .contact-role { font-size: 13px; color: var(--text-muted); }
-    .contact-links { display: flex; flex-direction: column; gap: 3px; margin-top: 6px; }
-    .contact-links a { font-size: 14px; color: var(--blue); text-decoration: none; }
+    .contact-links a { font-size: 14px; color: var(--blue); text-decoration: none; display: block; margin-top: 6px; }
+    .note { background: var(--amber-light); border-left: 3px solid var(--amber); padding: 10px 14px; font-size: 14px; margin-top: 12px; }
     .updated { text-align: center; font-size: 12px; color: var(--text-muted); margin-top: 24px; }
-    .note {
-      background: var(--amber-light);
-      border-left: 3px solid var(--amber);
-      padding: 10px 14px;
-      border-radius: 0 8px 8px 0;
-      font-size: 14px;
-      margin-top: 12px;
-    }
+    .loading { text-align: center; padding: 60px 20px; color: var(--text-muted); font-size: 15px; }
+    .phase-badge { display: inline-block; background: var(--blue); color: white; border-radius: 20px; padding: 4px 12px; font-size: 12px; font-weight: 600; }
   </style>
 </head>
 <body>
-<div class="site-header">
+
+<div class="site-header" id="header">
   <div class="brand">RW BIM Design</div>
-  <h1>Hoskins Residence</h1>
-  <div class="address">661 E Main St, Edmore, MI 48829</div>
+  <h1 id="hdr-name">Hoskins Residence</h1>
+  <div class="address" id="hdr-address">661 E Main St, Edmore, MI 48829</div>
   <div class="meta-row">
-    <span class="badge phase">&#128208; Setup</span>
+    <span class="badge phase" id="hdr-phase">Loading…</span>
     <span class="badge">&#128197; Started Apr 28, 2026</span>
     <span class="badge">&#129309; Pro Bono</span>
   </div>
 </div>
-<main>
-  <div class="section">
-    <div class="section-title">Project Overview</div>
-    <div class="info-grid">
-      <div class="info-cell">
-        <div class="info-label">Service Type</div>
-        <div class="info-value">Scan-to-BIM + Permit Drawings</div>
-      </div>
-      <div class="info-cell">
-        <div class="info-label">Building Type</div>
-        <div class="info-value">Single-Family Residential</div>
-      </div>
-      <div class="info-cell">
-        <div class="info-label">Jurisdiction</div>
-        <div class="info-value">Montcalm County, MI</div>
-      </div>
-      <div class="info-cell">
-        <div class="info-label">Code</div>
-        <div class="info-value">Michigan Residential Code 2015</div>
-      </div>
-    </div>
-  </div>
 
-  <div class="section">
-    <div class="section-title">Scope Progress</div>
-    <div class="overall-progress">
-      <div class="progress-label">
-        <span>Overall Completion</span>
-        <span>0 of 6 items complete</span>
-      </div>
-      <div class="progress-bar">
-        <div class="progress-fill" style="width:0%"></div>
-      </div>
-    </div>
-    <div class="scope-list" style="margin-top:16px;">
-      <div class="scope-item pending">
-        <div class="scope-dot pending"></div>
-        <div class="scope-info">
-          <div class="scope-name">Interior Laser Scan</div>
-          <div class="scope-desc">Full interior 3D scan of existing residence — all rooms and spaces</div>
-        </div>
-      </div>
-      <div class="scope-item pending">
-        <div class="scope-dot pending"></div>
-        <div class="scope-info">
-          <div class="scope-name">Exterior Laser Scan</div>
-          <div class="scope-desc">All four elevations, roofline, and site grade</div>
-        </div>
-      </div>
-      <div class="scope-item pending">
-        <div class="scope-dot pending"></div>
-        <div class="scope-info">
-          <div class="scope-name">As-Built BIM Model</div>
-          <div class="scope-desc">Existing conditions Revit model built from point cloud</div>
-        </div>
-      </div>
-      <div class="scope-item pending">
-        <div class="scope-dot pending"></div>
-        <div class="scope-info">
-          <div class="scope-name">Entry Addition Design</div>
-          <div class="scope-desc">Small exterior entry addition modeled and coordinated with Logan</div>
-        </div>
-      </div>
-      <div class="scope-item pending">
-        <div class="scope-dot pending"></div>
-        <div class="scope-info">
-          <div class="scope-name">New Bedroom Layout</div>
-          <div class="scope-desc">Interior bedroom addition within existing footprint</div>
-        </div>
-      </div>
-      <div class="scope-item pending">
-        <div class="scope-dot pending"></div>
-        <div class="scope-info">
-          <div class="scope-name">Permit Drawing Set</div>
-          <div class="scope-desc">PDF permit drawings delivered to Logan for building department submittal</div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="section">
-    <div class="section-title">Project Timeline</div>
-    <div class="timeline">
-      <div class="timeline-item">
-        <div class="tl-line"></div>
-        <div class="tl-dot done">&#10003;</div>
-        <div class="tl-content">
-          <div class="tl-label done">Project Setup</div>
-          <div class="tl-sub">Files organized, permit requirements researched</div>
-          <div class="tl-date">Apr 28, 2026</div>
-        </div>
-      </div>
-      <div class="timeline-item">
-        <div class="tl-line"></div>
-        <div class="tl-dot active">&#8594;</div>
-        <div class="tl-content">
-          <div class="tl-label active">On-Site Scanning</div>
-          <div class="tl-sub">Full interior and exterior laser scan of the residence</div>
-          <div class="tl-date">In progress</div>
-        </div>
-      </div>
-      <div class="timeline-item">
-        <div class="tl-line"></div>
-        <div class="tl-dot future"></div>
-        <div class="tl-content">
-          <div class="tl-label future">Scan Processing</div>
-          <div class="tl-sub">Point cloud registration and quality check in Faro Scene</div>
-        </div>
-      </div>
-      <div class="timeline-item">
-        <div class="tl-line"></div>
-        <div class="tl-dot future"></div>
-        <div class="tl-content">
-          <div class="tl-label future">As-Built Modeling</div>
-          <div class="tl-sub">Existing conditions Revit model from point cloud</div>
-        </div>
-      </div>
-      <div class="timeline-item">
-        <div class="tl-line"></div>
-        <div class="tl-dot future"></div>
-        <div class="tl-content">
-          <div class="tl-label future">Design Coordination</div>
-          <div class="tl-sub">Entry addition + bedroom layout reviewed and approved with Logan</div>
-        </div>
-      </div>
-      <div class="timeline-item">
-        <div class="tl-dot future"></div>
-        <div class="tl-content">
-          <div class="tl-label future">Permit Drawings Delivered</div>
-          <div class="tl-sub">PDF drawing set ready for Logan to submit to Montcalm County</div>
-        </div>
-      </div>
-    </div>
-    <div class="note">
-      &#9888;&#65039; <strong>Permit note:</strong> If the entry addition footprint is under 7 ft in every direction, it may be exempt from permitting under Montcalm County rules. Roy will confirm on-site.
-    </div>
-  </div>
-
-  <div class="section">
-    <div class="section-title">Your Contact</div>
-    <div class="contact-card">
-      <div class="contact-avatar">R</div>
-      <div>
-        <div class="contact-name">Roy Whitten</div>
-        <div class="contact-role">RW BIM Design &#8212; BIM Consultant</div>
-        <div class="contact-links">
-          <a href="mailto:roy@rwbim.design">roy@rwbim.design</a>
-        </div>
-      </div>
-    </div>
-  </div>
+<main id="main">
+  <div class="loading">Loading project status…</div>
 </main>
-<div class="updated">Last updated: April 28, 2026</div>
+
+<div class="updated" id="updated"></div>
+
+<script>
+var DATA_URL = 'https://raw.githubusercontent.com/rwbwhitten/rw-bim-quote/main/project_data.json';
+var PROJECT_ID = 'E_26_004_HKNS_ResidenceAddition';
+
+function formatDate(d) {
+  if (!d) return '';
+  var parts = d.split('-');
+  var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  return months[parseInt(parts[1])-1] + ' ' + parseInt(parts[2]) + ', ' + parts[0];
+}
+
+function getPhaseLabel(milestones) {
+  var inProgress = milestones.find(function(m) { return m.status === 'in_progress'; });
+  if (inProgress) return inProgress.label;
+  var pending = milestones.find(function(m) { return m.status === 'pending'; });
+  if (pending) {
+    var pendingIdx = milestones.indexOf(pending);
+    if (pendingIdx > 0 && milestones[pendingIdx-1].status === 'complete') return pending.label;
+    return pending.label;
+  }
+  return 'Complete';
+}
+
+function render(project) {
+  var milestones = project.milestones;
+  var total = milestones.length;
+  var done = milestones.filter(function(m) { return m.status === 'complete'; }).length;
+  var pct = total > 0 ? Math.round((done / total) * 100) : 0;
+
+  document.getElementById('hdr-phase').textContent = getPhaseLabel(milestones);
+
+  var html = '';
+
+  // Overview
+  html += '<div class="section"><div class="section-title">Project Overview</div>' +
+    '<div class="info-grid">' +
+    '<div><div class="info-label">Service Type</div><div class="info-value">Scan-to-BIM + Permit Drawings</div></div>' +
+    '<div><div class="info-label">Building Type</div><div class="info-value">Single-Family Residential</div></div>' +
+    '<div><div class="info-label">Jurisdiction</div><div class="info-value">Montcalm County, MI</div></div>' +
+    '<div><div class="info-label">Code</div><div class="info-value">Michigan Residential Code 2015</div></div>' +
+    '</div></div>';
+
+  // Progress
+  html += '<div class="section"><div class="section-title">Scope Progress</div>' +
+    '<div class="progress-label"><span>Overall Completion</span><span>' + done + ' of ' + total + ' complete</span></div>' +
+    '<div class="progress-bar"><div class="progress-fill" style="width:' + pct + '%"></div></div>' +
+    '<div class="scope-list" style="margin-top:16px;">';
+
+  milestones.forEach(function(m) {
+    html += '<div class="scope-item ' + m.status + '">' +
+      '<div class="scope-dot ' + m.status + '"></div>' +
+      '<div class="scope-info">' +
+        '<div class="scope-name ' + m.status + '">' + m.label + '</div>' +
+        '<div class="scope-desc">' + m.description + '</div>' +
+        (m.date ? '<div class="scope-date">Completed ' + formatDate(m.date) + '</div>' : '') +
+      '</div></div>';
+  });
+  html += '</div></div>';
+
+  // Timeline
+  html += '<div class="section"><div class="section-title">Project Timeline</div><div class="timeline">';
+  milestones.forEach(function(m, i) {
+    var isLast = i === milestones.length - 1;
+    var icon = m.status === 'complete' ? '&#10003;' : (m.status === 'in_progress' ? '&#8594;' : '');
+    html += '<div class="timeline-item">' +
+      (isLast ? '' : '<div class="tl-line"></div>') +
+      '<div class="tl-dot ' + m.status + '">' + icon + '</div>' +
+      '<div class="tl-content">' +
+        '<div class="tl-label ' + m.status + '">' + m.label + '</div>' +
+        '<div class="tl-sub">' + m.description + '</div>' +
+        (m.date ? '<div class="tl-date">Completed ' + formatDate(m.date) + '</div>' : (m.status === 'in_progress' ? '<div class="tl-sub" style="margin-top:4px;color:#2563eb;">In progress</div>' : '')) +
+      '</div></div>';
+  });
+  html += '</div>';
+  html += '<div class="note">&#9888;&#65039; <strong>Permit note:</strong> If the entry addition footprint is under 7 ft in every direction, it may be exempt from permitting under Montcalm County rules. Roy will confirm on-site.</div>';
+  html += '</div>';
+
+  // Contact
+  html += '<div class="section"><div class="section-title">Your Contact</div>' +
+    '<div class="contact-card">' +
+    '<div class="contact-avatar">R</div>' +
+    '<div><div class="contact-name">Roy Whitten</div>' +
+    '<div class="contact-role">RW BIM Design &mdash; BIM Consultant</div>' +
+    '<div class="contact-links"><a href="mailto:roy@rwbim.design">roy@rwbim.design</a></div>' +
+    '</div></div></div>';
+
+  document.getElementById('main').innerHTML = html;
+}
+
+fetch(DATA_URL + '?t=' + Date.now())
+  .then(function(r) { return r.json(); })
+  .then(function(data) {
+    var project = data.projects.find(function(p) { return p.id === PROJECT_ID; });
+    if (!project) { document.getElementById('main').innerHTML = '<div class="loading">Project not found.</div>'; return; }
+    render(project);
+    document.getElementById('updated').textContent = 'Last updated: ' + formatDate(data.meta.updated);
+  })
+  .catch(function() {
+    document.getElementById('main').innerHTML = '<div class="loading">Unable to load status. Please try again shortly.</div>';
+  });
+</script>
 </body>
 </html>

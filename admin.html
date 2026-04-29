@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+  <title>RW BIM — Project Status</title>
+  <style>
+    :root {
+      --navy: #1a2b3c;
+      --blue: #2563eb;
+      --blue-bg: #eff6ff;
+      --green: #16a34a;
+      --green-bg: #f0fdf4;
+      --amber: #d97706;
+      --amber-bg: #fffbeb;
+      --gray: #6b7280;
+      --gray-bg: #f3f4f6;
+      --border: #e5e7eb;
+      --text: #111827;
+      --muted: #6b7280;
+      --white: #ffffff;
+      --danger: #dc2626;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    html, body { height: 100%; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #f1f5f9;
+      color: var(--text);
+      font-size: 16px;
+      overscroll-behavior: none;
+    }
+
+    /* ── Top bar ── */
+    .topbar {
+      background: var(--navy);
+      color: white;
+      padding: 16px 20px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .topbar-left { display: flex; align-items: center; gap: 12px; }
+    .back-btn {
+      background: rgba(255,255,255,0.15);
+      border: none; border-radius: 8px;
+      color: white; font-size: 20px;
+      width: 36px; height: 36px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; display: none;
+    }
+    .topbar h1 { font-size: 18px; font-weight: 700; }
+    .topbar .sub { font-size: 13px; color: #94a3b8; margin-top: 1px; }
+    .settings-btn {
+      background: none; border: none;
+      color: #94a3b8; font-size: 22px;
+      cursor: pointer; padding: 4px;
+    }
+
+    /* ── Views ── */
+    .view { display: none; padding: 16px; max-width: 600px; margin: 0 auto; }
+    .view.active { display: block; }
+
+    /* ── Setup screen ── */
+    .setup-card {
+      background: white;
+      border-radius: 16px;
+      padding: 28px 24px;
+      margin-top: 20px;
+      text-align: center;
+    }
+    .setup-icon { font-size: 48px; margin-bottom: 16px; }
+    .setup-card h2 { font-size: 20px; font-weight: 700; margin-bottom: 8px; }
+    .setup-card p { font-size: 14px; color: var(--muted); line-height: 1.6; margin-bottom: 20px; }
+    .pat-input {
+      width: 100%; padding: 14px 16px; border-radius: 10px;
+      border: 1.5px solid var(--border); font-size: 15px;
+      font-family: monospace; margin-bottom: 12px;
+      outline: none; color: var(--text);
+    }
+    .pat-input:focus { border-color: var(--blue); }
+    .primary-btn {
+      width: 100%; padding: 16px; border-radius: 12px;
+      background: var(--blue); color: white; font-size: 16px;
+      font-weight: 600; border: none; cursor: pointer;
+    }
+    .primary-btn:active { opacity: 0.85; }
+    .hint { font-size: 12px; color: var(--muted); margin-top: 10px; line-height: 1.5; }
+
+    /* ── Project list ── */
+    .section-label {
+      font-size: 12px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.07em; color: var(--muted); margin: 4px 0 10px;
+    }
+    .project-card {
+      background: white; border-radius: 14px; padding: 18px 20px;
+      margin-bottom: 12px; cursor: pointer;
+      border: 1.5px solid transparent;
+      transition: border-color 0.15s;
+      display: flex; align-items: center; gap: 16px;
+    }
+    .project-card:active { background: #f8fafc; }
+    .project-avatar {
+      width: 48px; height: 48px; border-radius: 12px;
+      background: var(--navy); color: white;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; font-weight: 700; flex-shrink: 0;
+    }
+    .project-info { flex: 1; min-width: 0; }
+    .project-name { font-weight: 700; font-size: 16px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .project-client { font-size: 13px; color: var(--muted); margin-top: 2px; }
+    .project-progress { margin-top: 8px; }
+    .prog-bar { height: 5px; background: var(--gray-bg); border-radius: 99px; overflow: hidden; margin-bottom: 4px; }
+    .prog-fill { height: 100%; background: var(--blue); border-radius: 99px; }
+    .prog-label { font-size: 12px; color: var(--muted); }
+    .project-chevron { color: #d1d5db; font-size: 20px; flex-shrink: 0; }
+
+    /* ── Milestone list ── */
+    .project-header {
+      background: white; border-radius: 14px;
+      padding: 18px 20px; margin-bottom: 16px;
+    }
+    .project-header .name { font-size: 20px; font-weight: 700; }
+    .project-header .client { font-size: 14px; color: var(--muted); margin-top: 2px; }
+    .project-header .address { font-size: 13px; color: var(--muted); margin-top: 4px; }
+    .project-header .progress-row { margin-top: 14px; }
+    .project-header .prog-bar { height: 7px; margin-bottom: 6px; }
+    .project-header .prog-label { font-size: 13px; font-weight: 500; }
+
+    .milestone-item {
+      background: white; border-radius: 14px; margin-bottom: 10px;
+      display: flex; align-items: center; gap: 0;
+      overflow: hidden; cursor: pointer;
+      border: 2px solid transparent;
+      transition: border-color 0.12s;
+    }
+    .milestone-item.complete { border-color: var(--green); }
+    .milestone-item.in_progress { border-color: var(--blue); }
+    .milestone-item:active { opacity: 0.85; }
+
+    .ms-check-area {
+      width: 72px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      padding: 20px 0;
+      background: var(--gray-bg);
+      align-self: stretch;
+    }
+    .milestone-item.complete .ms-check-area { background: var(--green-bg); }
+    .milestone-item.in_progress .ms-check-area { background: var(--blue-bg); }
+
+    .ms-check {
+      width: 36px; height: 36px; border-radius: 50%;
+      border: 2.5px solid #d1d5db;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; font-weight: 700; color: transparent;
+      transition: all 0.15s;
+      flex-shrink: 0;
+    }
+    .milestone-item.complete .ms-check {
+      background: var(--green); border-color: var(--green); color: white;
+    }
+    .milestone-item.in_progress .ms-check {
+      background: var(--blue); border-color: var(--blue); color: white;
+      font-size: 14px;
+    }
+
+    .ms-content { flex: 1; padding: 18px 18px 18px 16px; min-width: 0; }
+    .ms-label { font-size: 17px; font-weight: 600; }
+    .milestone-item.complete .ms-label { color: var(--green); }
+    .milestone-item.in_progress .ms-label { color: var(--blue); }
+    .ms-desc { font-size: 13px; color: var(--muted); margin-top: 4px; line-height: 1.4; }
+    .ms-date { font-size: 12px; color: var(--green); margin-top: 6px; font-weight: 500; }
+
+    .ms-status-badge {
+      padding: 0 16px 0 0;
+      font-size: 12px; font-weight: 600; color: var(--muted);
+      white-space: nowrap; flex-shrink: 0;
+    }
+    .milestone-item.complete .ms-status-badge { color: var(--green); }
+    .milestone-item.in_progress .ms-status-badge { color: var(--blue); }
+
+    /* ── Settings ── */
+    .settings-card {
+      background: white; border-radius: 14px; padding: 20px;
+      margin-bottom: 12px;
+    }
+    .settings-card h3 { font-size: 16px; font-weight: 700; margin-bottom: 12px; }
+    .settings-card p { font-size: 14px; color: var(--muted); margin-bottom: 12px; line-height: 1.5; }
+    .danger-btn {
+      padding: 12px 20px; border-radius: 10px;
+      background: #fef2f2; color: var(--danger); border: 1.5px solid #fecaca;
+      font-size: 14px; font-weight: 600; cursor: pointer; width: 100%;
+    }
+
+    /* ── Saving indicator ── */
+    .saving-toast {
+      position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+      background: var(--navy); color: white;
+      padding: 12px 24px; border-radius: 99px;
+      font-size: 14px; font-weight: 500;
+      opacity: 0; transition: opacity 0.2s;
+      pointer-events: none; white-space: nowrap;
+      z-index: 200;
+    }
+    .saving-toast.show { opacity: 1; }
+
+    /* ── Client page link ── */
+    .client-link-btn {
+      display: flex; align-items: center; gap: 10px;
+      background: var(--gray-bg); border-radius: 10px;
+      padding: 14px 16px; margin-top: 12px;
+      text-decoration: none; color: var(--text);
+      font-size: 14px; font-weight: 500;
+      border: 1.5px solid var(--border);
+    }
+    .client-link-btn:active { background: #e5e7eb; }
+  </style>
+</head>
+<body>
+
+<!-- ── Top Bar ── -->
+<div class="topbar" id="topbar">
+  <div class="topbar-left">
+    <button class="back-btn" id="backBtn" onclick="showProjects()">&#8592;</button>
+    <div>
+      <div class="topbar h1" id="topbarTitle" style="font-size:18px;font-weight:700;">RW BIM Projects</div>
+      <div class="sub" id="topbarSub"></div>
+    </div>
+  </div>
+  <button class="settings-btn" onclick="showSettings()">&#9881;</button>
+</div>
+
+<!-- ── Setup View ── -->
+<div class="view active" id="view-setup">
+  <div class="setup-card">
+    <div class="setup-icon">&#128274;</div>
+    <h2>Connect GitHub</h2>
+    <p>This app uses your GitHub account to save project status. Enter your Personal Access Token (PAT) below — it's stored only on this device.</p>
+    <input class="pat-input" id="patInput" type="password" placeholder="ghp_xxxxxxxxxxxx" autocomplete="off" autocorrect="off" spellcheck="false"/>
+    <button class="primary-btn" onclick="savePat()">Connect &amp; Load Projects</button>
+    <div class="hint">Need a token? GitHub → Settings → Developer settings → Personal access tokens → Tokens (classic) → Generate new token. Check the <strong>repo</strong> box.</div>
+  </div>
+</div>
+
+<!-- ── Project List View ── -->
+<div class="view" id="view-projects">
+  <div class="section-label">Active Projects</div>
+  <div id="projectList"></div>
+</div>
+
+<!-- ── Milestone View ── -->
+<div class="view" id="view-milestones">
+  <div id="milestoneContent"></div>
+</div>
+
+<!-- ── Settings View ── -->
+<div class="view" id="view-settings">
+  <div class="settings-card">
+    <h3>GitHub Token</h3>
+    <p>Your Personal Access Token is stored locally on this device. Clear it here if you need to update it.</p>
+    <button class="danger-btn" onclick="clearPat()">Clear Token &amp; Sign Out</button>
+  </div>
+  <div class="settings-card">
+    <h3>About</h3>
+    <p>RW BIM Project Status App<br>Updates live via GitHub API — no server required.</p>
+  </div>
+</div>
+
+<!-- ── Saving Toast ── -->
+<div class="saving-toast" id="toast"></div>
+
+<script>
+const REPO = 'rwbwhitten/rw-bim-quote';
+const DATA_PATH = 'project_data.json';
+const BASE_URL = 'https://api.github.com/repos/' + REPO + '/contents/' + DATA_PATH;
+
+let pat = '';
+let projectData = null;
+let currentFileSha = '';
+let currentProjectIdx = 0;
+let saving = false;
+
+function showToast(msg, duration) {
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(function() { t.classList.remove('show'); }, duration || 2000);
+}
+
+function showView(id) {
+  document.querySelectorAll('.view').forEach(function(v) { v.classList.remove('active'); });
+  document.getElementById('view-' + id).classList.add('active');
+}
+
+function showSettings() {
+  document.getElementById('backBtn').style.display = 'flex';
+  document.getElementById('topbarTitle').textContent = 'Settings';
+  document.getElementById('topbarSub').textContent = '';
+  showView('settings');
+}
+
+function showProjects() {
+  document.getElementById('backBtn').style.display = 'none';
+  document.getElementById('topbarTitle').textContent = 'RW BIM Projects';
+  document.getElementById('topbarSub').textContent = '';
+  showView('projects');
+}
+
+function showMilestones(idx) {
+  currentProjectIdx = idx;
+  var p = projectData.projects[idx];
+  document.getElementById('backBtn').style.display = 'flex';
+  document.getElementById('topbarTitle').textContent = p.name;
+  document.getElementById('topbarSub').textContent = p.client;
+  renderMilestones(p);
+  showView('milestones');
+}
+
+function formatDate(d) {
+  if (!d) return '';
+  var parts = d.split('-');
+  var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  return months[parseInt(parts[1])-1] + ' ' + parseInt(parts[2]) + ', ' + parts[0];
+}
+
+function renderProjects() {
+  var list = document.getElementById('projectList');
+  list.innerHTML = '';
+  projectData.projects.forEach(function(p, idx) {
+    var total = p.milestones.length;
+    var done = p.milestones.filter(function(m) { return m.status === 'complete'; }).length;
+    var pct = total > 0 ? Math.round((done / total) * 100) : 0;
+    var initials = p.name.split(' ').map(function(w) { return w[0]; }).slice(0,2).join('');
+    var card = document.createElement('div');
+    card.className = 'project-card';
+    card.innerHTML =
+      '<div class="project-avatar">' + initials + '</div>' +
+      '<div class="project-info">' +
+        '<div class="project-name">' + p.name + '</div>' +
+        '<div class="project-client">' + p.client + '</div>' +
+        '<div class="project-progress">' +
+          '<div class="prog-bar"><div class="prog-fill" style="width:' + pct + '%"></div></div>' +
+          '<div class="prog-label">' + done + ' of ' + total + ' milestones complete</div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="project-chevron">&#8250;</div>';
+    card.onclick = function() { showMilestones(idx); };
+    list.appendChild(card);
+  });
+}
+
+function renderMilestones(p) {
+  var total = p.milestones.length;
+  var done = p.milestones.filter(function(m) { return m.status === 'complete'; }).length;
+  var pct = total > 0 ? Math.round((done / total) * 100) : 0;
+
+  var html = '<div class="project-header">' +
+    '<div class="name">' + p.name + '</div>' +
+    '<div class="client">' + p.client + '</div>' +
+    (p.address ? '<div class="address">' + p.address + '</div>' : '') +
+    '<div class="progress-row">' +
+      '<div class="prog-bar"><div class="prog-fill" style="width:' + pct + '%"></div></div>' +
+      '<div class="prog-label">' + done + ' of ' + total + ' complete</div>' +
+    '</div>';
+
+  if (p.clientPage) {
+    html += '<a class="client-link-btn" href="https://rwbwhitten.github.io/rw-bim-quote/' + p.clientPage + '" target="_blank">' +
+      '&#128279; View client page</a>';
+  }
+  html += '</div>';
+
+  p.milestones.forEach(function(m, i) {
+    var checkMark = m.status === 'complete' ? '&#10003;' : (m.status === 'in_progress' ? '&#8594;' : '');
+    var badge = m.status === 'complete' ? 'Done' : (m.status === 'in_progress' ? 'In progress' : '');
+    html += '<div class="milestone-item ' + m.status + '" id="ms-' + i + '" onclick="cycleMilestone(' + i + ')">' +
+      '<div class="ms-check-area"><div class="ms-check">' + checkMark + '</div></div>' +
+      '<div class="ms-content">' +
+        '<div class="ms-label">' + m.label + '</div>' +
+        '<div class="ms-desc">' + m.description + '</div>' +
+        (m.date ? '<div class="ms-date">Completed ' + formatDate(m.date) + '</div>' : '') +
+      '</div>' +
+      (badge ? '<div class="ms-status-badge">' + badge + '</div>' : '') +
+    '</div>';
+  });
+
+  document.getElementById('milestoneContent').innerHTML = html;
+}
+
+function cycleMilestone(idx) {
+  if (saving) return;
+  var p = projectData.projects[currentProjectIdx];
+  var m = p.milestones[idx];
+  var prev = m.status;
+  if (m.status === 'pending') {
+    m.status = 'complete';
+    m.date = new Date().toISOString().split('T')[0];
+  } else if (m.status === 'complete') {
+    m.status = 'pending';
+    m.date = null;
+  } else if (m.status === 'in_progress') {
+    m.status = 'complete';
+    m.date = new Date().toISOString().split('T')[0];
+  }
+  renderMilestones(p);
+  saveData();
+}
+
+function saveData() {
+  saving = true;
+  showToast('Saving…', 10000);
+  projectData.meta.updated = new Date().toISOString().split('T')[0];
+  var content = btoa(unescape(encodeURIComponent(JSON.stringify(projectData, null, 2))));
+  var body = { message: 'Update project status', content: content, sha: currentFileSha };
+  fetch(BASE_URL, {
+    method: 'PUT',
+    headers: { 'Authorization': 'token ' + pat, 'Content-Type': 'application/json' },
+    body: JSON.stringify(body)
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(data) {
+    saving = false;
+    if (data.content && data.content.sha) {
+      currentFileSha = data.content.sha;
+      showToast('Saved ✓', 1800);
+    } else {
+      showToast('Save failed — check token', 3000);
+    }
+  })
+  .catch(function() {
+    saving = false;
+    showToast('Save failed — check connection', 3000);
+  });
+}
+
+function loadData() {
+  showToast('Loading…', 10000);
+  fetch(BASE_URL, {
+    headers: { 'Authorization': 'token ' + pat }
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(data) {
+    if (!data.content) { showToast('Could not load data', 3000); return; }
+    currentFileSha = data.sha;
+    var decoded = decodeURIComponent(escape(atob(data.content)));
+    projectData = JSON.parse(decoded);
+    renderProjects();
+    showProjects();
+  })
+  .catch(function() {
+    showToast('Load failed — check token', 3000);
+  });
+}
+
+function savePat() {
+  var input = document.getElementById('patInput').value.trim();
+  if (!input || input.length < 10) { showToast('Please enter a valid token', 2000); return; }
+  pat = input;
+  try { localStorage.setItem('rwbim_pat', pat); } catch(e) {}
+  loadData();
+}
+
+function clearPat() {
+  try { localStorage.removeItem('rwbim_pat'); } catch(e) {}
+  pat = '';
+  projectData = null;
+  showView('setup');
+  document.getElementById('backBtn').style.display = 'none';
+  document.getElementById('topbarTitle').textContent = 'RW BIM Projects';
+}
+
+// Init
+try {
+  var stored = localStorage.getItem('rwbim_pat');
+  if (stored) {
+    pat = stored;
+    loadData();
+  }
+} catch(e) {}
+</script>
+</body>
+</html>
