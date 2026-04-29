@@ -29,8 +29,8 @@
           "id": "scan_exterior",
           "label": "Exterior Laser Scan",
           "description": "All four elevations, roofline, site grade",
-          "status": "pending",
-          "date": null
+          "status": "complete",
+          "date": "2026-04-29"
         },
         {
           "id": "scan_processing",
